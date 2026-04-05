@@ -46,10 +46,9 @@ Route::middleware(['auth', 'role:complex,admin', 'level:advanced', 'track.login'
     Route::delete('/objets/{device}', [DeviceManagementController::class, 'destroy'])->name('devices.destroy');
     Route::post('/objets/{device}/controle', [DeviceManagementController::class, 'control'])->name('devices.control');
     Route::put('/objets/{device}/zone', [DeviceManagementController::class, 'assignZone'])->name('devices.assign-zone');
-    Route::get('/rapports', [ReportController::class, 'index'])->name('reports.index');
-    
     // --- ROUTES PLACEHOLDERS (En construction) ---
-    Route::get('/zones', function() { return 'Page Zones en construction'; })->name('zones.index');
+    Route::get('/rapports', function() { return '<div style="text-align:center; padding:100px; font-family:sans-serif;"><h1>🚧 Module Rapports</h1><p>Prévu pour le Sprint 2.</p><a href="/gestion/objets">Retour</a></div>'; })->name('reports.index');
+    Route::get('/zones', function() { return '<div style="text-align:center; padding:100px; font-family:sans-serif;"><h1>🚧 Gestion des Zones</h1><p>Prévu pour le Sprint 2.</p><a href="/gestion/objets">Retour</a></div>'; })->name('zones.index');
 });
 
 // ── MODULE ADMINISTRATION (Admin + Expert) ────────────────────────────────
@@ -61,7 +60,7 @@ Route::middleware(['auth', 'role:admin', 'level:expert', 'track.login'])->prefix
     Route::post('/utilisateurs/{user}/xp', [AdminUserController::class, 'adjustXp'])->name('users.xp');
 
     // --- ROUTES PLACEHOLDERS (En construction) ---
-    Route::get('/categories', function() { return 'Page Catégories en construction'; })->name('categories.index');
-    Route::get('/zones', function() { return 'Page Zones Admin en construction'; })->name('zones.index');
-    Route::get('/integrite', function() { return 'Page Intégrité en construction'; })->name('integrity.index');
+    Route::get('/categories', function() { return '<div style="text-align:center; padding:100px; font-family:sans-serif;"><h1>🚧 Gestion des Catégories</h1><p>Prévu pour le Sprint 2.</p><a href="/administration">Retour</a></div>'; })->name('categories.index');
+    Route::get('/zones', function() { return '<div style="text-align:center; padding:100px; font-family:sans-serif;"><h1>🚧 Administration des Zones</h1><p>Prévu pour le Sprint 2.</p><a href="/administration">Retour</a></div>'; })->name('zones.index');
+    Route::get('/integrite', function() { return '<div style="text-align:center; padding:100px; font-family:sans-serif;"><h1>🚧 Intégrité des données</h1><p>Prévu pour le Sprint 2.</p><a href="/administration">Retour</a></div>'; })->name('integrity.index');
 });
