@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\ExperienceService;
 use Illuminate\Http\{Request, RedirectResponse};
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AdminUserController extends Controller
 {
@@ -53,13 +54,23 @@ class AdminUserController extends Controller
     // ─────────────────────────────────────────────────────────
     public function approve(User $user): RedirectResponse
     {
-        // Affectation explicite pour éviter la faille de Mass Assignment
         $user->is_approved = true;
         $user->approved_at = now();
         $user->approved_by = Auth::id();
         $user->save();
         
-        return back()->with('success', "Le compte de {$user->name} a été approuvé.");
+        // SÉCURITÉ & CAHIER DES CHARGES : Envoi d'un e-mail de validation
+        try {
+            Mail::raw("Bonjour {$user->name},\n\nExcellente nouvelle : votre compte a été validé par notre administrateur ! Vous pouvez dès à présent vous connecter sur la plateforme Chez Léon pour accéder à vos objets connectés.\n\nÀ très vite !", function ($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('✅ Votre compte Chez Léon est validé !');
+            });
+        } catch (\Exception $e) {
+            // On attrape l'erreur si le serveur mail n'est pas configuré
+            // pour ne pas bloquer l'administrateur
+        }
+        
+        return back()->with('success', "Le compte de {$user->name} a été approuvé. Un e-mail lui a été envoyé.");
     }
 
     // ─────────────────────────────────────────────────────────

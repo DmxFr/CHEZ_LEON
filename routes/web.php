@@ -7,9 +7,8 @@ use App\Http\Controllers\FreeTourController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Auth\{LoginController, RegisterController};
 use App\Http\Controllers\Simple\{DashboardController, ProfileController, DeviceViewController, ExperienceController};
-use App\Http\Controllers\Complex\{DeviceManagementController, ReportController, ZoneController};
-use App\Http\Controllers\Admin\{AdminDashboardController, AdminUserController, AdminCategoryController, AdminZoneController, AdminIntegrityController, AdminHistoryController, AdminSettingsController, AdminNewsController};
-
+use App\Http\Controllers\Complex\{DeviceManagementController};
+use App\Http\Controllers\Admin\{AdminDashboardController, AdminUserController};
 // ── MODULE PUBLIC (Visiteurs) ─────────────────────────────────────────────
 Route::prefix('')->name('public.')->group(function () {
     Route::get('/', [PublicHomeController::class, 'index'])->name('home');

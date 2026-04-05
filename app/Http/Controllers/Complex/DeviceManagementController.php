@@ -109,7 +109,7 @@ class DeviceManagementController extends Controller
         );
 
         return redirect()
-            ->route('simple.devices.show', $device)
+            ->route('complex.devices.index')
             ->with('success', "L'appareil « {$device->name} » a été créé avec succès.");
     }
 
@@ -166,7 +166,7 @@ class DeviceManagementController extends Controller
     $device->invalidateDataCache(); // Nettoyage du cache spécifique à l'objet
 
     return redirect()
-        ->route('simple.devices.show', $device)
+        ->route('complex.devices.index')
         ->with('success', "Appareil mis à jour.");
 }
 

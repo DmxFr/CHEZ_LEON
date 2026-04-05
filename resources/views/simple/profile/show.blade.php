@@ -47,10 +47,19 @@
             <div class="card shadow-sm border-0 mt-4" style="border-top: 4px solid var(--leon-dark) !important;">
                 <div class="card-body p-4">
                     <h3 style="font-size:1.2rem; margin-bottom:1rem;">Modifier mes informations</h3>
-                    <form method="POST" action="{{ route('simple.profile.update') }}">
+                    <form method="POST" action="{{ route('simple.profile.update') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
+                        {{-- Ajout du champ Avatar --}}
+                        <div class="mb-4 d-flex align-items-center gap-3">
+                            <img src="{{ $user->avatar_url }}" alt="Avatar" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <label class="form-label" style="font-size:0.8rem; font-weight:bold; color:var(--leon-muted);">Photo de profil (Optionnel)</label>
+                                <input type="file" name="avatar" class="form-control form-control-sm" accept="image/*">
+                            </div>
+                        </div>
+
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label" style="font-size:0.8rem; font-weight:bold; color:var(--leon-muted);">Nom</label>
