@@ -1,58 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🍽️ Chez Léon — Plateforme IoT Gastronomique 
+L'excellence culinaire, pilotée par la technologie.
+Projet de Développement Web · ING1 CY Tech · 2025-2026 
+Laravel 11 PHP 8.3 Bootstrap 5 SQLite Vite 
+📖 À propos du projet 
+Chez Léon est une plateforme numérique intelligente dédiée à un restaurant gastronomique étoilé. Ce projet explore l'Internet des
+Objets (IoT) dans la haute gastronomie pour répondre à des problématiques concrètes : maîtrise de la chaîne du froid, contrôle précis
+des températures de cuisson et gestion éco-responsable des équipements. 
+🎯 Modules de la plateformeModule Accès FonctionnalitésInformation Visiteurs Actualités, visite guidée, recherche publiqueVisualisation Simple (Débutant/Intermédiaire) Consultation des objets IoT, profil, historique XPGestion Complexe (Avancé+) CRUD appareils, contrôle IoT, rapportsAdministration Admin (Expert) Gestion utilisateurs, approbations, supervision globale 
+⭐ Points techniques forts 
+Sécurité à double dimension — Contrôle d'accès croisant rôle métier × niveau d'expérience via 4 middlewares personnalisés
+Moteur de gamification — ExperienceService injectable avec transactions DB, anti-spam par cache
+Cache optimisé — Pattern toArray() / forceFill() éliminant les bugs de désérialisation PHP
+(__PHP_Incomplete_Class)
+Design Gastro-Tech Luxe — Glassmorphism, Cormorant Garamond, surcharge Bootstrap globale sans modifier le HTML 
+🛠️ Stack technologique 
+Backend : Laravel 11 (PHP 8.3) — MVC, Middlewares, Cache natif, Eloquent ORM
+Base de données : SQLite (dev) / MySQL (prod) — Migrations, Soft Deletes, relations polymorphiques
+Frontend : Bootstrap 5 + CSS personnalisé — Mobile-First, Glassmorphism, animations
+Build : Vite 8 + Tailwind CSS 4
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+⚙️ Installation et démarrage 
+Prérequis 
+PHP 8.3+
+Composer
+Node.js 18+
+Git 
+Étapes 
+# 1. Cloner le dépôt
+git clone https://github.com/Neimad1612/Projet-dev-web.git
+cd Projet-dev-web
+# 2. Installer les dépendances PHP
+composer install
+# 3. Installer les dépendances JavaScript et compiler les assets
+npm install
+npm run build
+# 4. Configurer l'environnement
+cp .env.example .env
+php artisan key:generate
+Note : Vérifiez que votre .env contient DB_CONNECTION=sqlite et MAIL_MAILER=log. 
+# 5. Créer la base de données et injecter les données de démonstration
+php artisan migrate:fresh --seed
+# 6. Lancer le serveur de développement
+php artisan serve
 
-## About Laravel
+L'application est accessible sur **http://127.0.0.1:8000** 
+🎬 Scénario de démonstration 
+Phase 1 — Expérience visiteur & sécurité d'inscription 
+Ouvrir le site en navigation privée
+Parcourir la page d'accueil, les actualités et la visite guidée
+Cliquer sur S'inscrire et créer un compte
+Résultat attendu : message flash indiquant que le compte est en attente d'approbation — accès refusé (403) grâce au
+middleware CheckRole 
+Phase 2 — Rôle administrateur 
+Se connecter avec le compte administrateur (créé par les Seeders)
+Aller dans Administration > En attente
+Approuver le nouveau compte
+Résultat attendu : statut approuvé, rôle Simple attribué
+Ouvrir storage/logs/laravel.log pour voir l'e-mail de confirmation simulé 
+Phase 3 — Moteur de gamification (XP) 
+Se connecter avec le nouveau compte approuvé
+Connexion : le middleware TrackLogin attribue 5 XP automatiquement (1 fois/jour)
+Consultation : cliquer sur un appareil IoT — TrackDeviceView attribue 2 XP (1 fois/heure/appareil)
+Vérifier la barre de progression XP dans la navbar et l'historique dans Mon profil
+L'ExperienceService recalcule le niveau automatiquement via une transaction DB 
+Phase 4 — Gestion des objets IoT 
+Aller sur Objets connectés et tester les 4 filtres dynamiques (catégorie, zone, statut, recherche)
+Se connecter en tant qu'administrateur pour accéder au CRUD complet
+Ajouter un équipement (four, thermostat, cave à vin)
+Note : la suppression est logique (Soft Delete) pour préserver l'historique des capteurs et la traçabilité des consommations
+énergétiques 
+📁 Structure du projet 
+app/
+├── Http/
+│ ├── Controllers/
+│ │ ├── Admin/ # AdminDashboardController, AdminUserController
+│ │ ├── Auth/ # LoginController, RegisterController
+│ │ ├── Complex/ # DeviceManagementController
+│ │ └── Simple/ # DeviceViewController, ProfileController, ExperienceController
+│ └── Middleware/
+│ ├── CheckRole.php # Contrôle du rôle métier
+│ ├── CheckLevel.php # Contrôle du niveau XP
+│ ├── TrackLogin.php # Attribution XP à la connexion
+│ └── TrackDeviceView.php # Attribution XP à la consultation
+├── Models/ # User, Device, Zone, DeviceCategory, ExperienceLog...
+├── Services/
+│ └── ExperienceService.php # Moteur de gamification
+└── Observers/
+└── UserObserver.php
+database/├── migrations/ # 10 migrations versionnées
+├── seeders/ # DatabaseSeeder (admin, appareils IoT, actualités)
+└── factories/ # UserFactory, DeviceFactory
+resources/
+├── views/
+│ ├── layouts/app.blade.php # Layout maître (design Gastro-Tech Luxe)
+│ ├── public/ # Accueil, actualités, visite guidée
+│ ├── auth/ # Login, inscription
+│ ├── simple/ # Dashboard, objets, profil, XP
+│ ├── complex/ # Création et édition d'appareils
+│ └── admin/ # Dashboard admin, gestion utilisateurs
+└── css/app.css
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+👥 ÉquipeMembre Rôle ResponsabilitésNeimad Tech Lead & Backend Architecture Laravel, middlewares de sécurité, système XP, cache, contrôleurs
+métierBrice & Mathéo Frontend & UI/UX Design Gastro-Tech Luxe, vues Blade, Bootstrap 5, accessibilité WCAGDamien D. & Damien F. Base de données & IoT MCD, migrations, modèles Eloquent, Seeders et Factories IoT📄 Licence 
+Projet académique — CY Tech ING1 · 2025-2026. Tous droits réservés
