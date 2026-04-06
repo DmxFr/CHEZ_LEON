@@ -43,35 +43,48 @@ class AdminUserController extends Controller
     // ─────────────────────────────────────────────────────────
     // PENDING — Liste des utilisateurs en attente de validation
     // ─────────────────────────────────────────────────────────
-    public function pending()
-    {
-        $users = User::pendingApproval()->latest()->paginate(20);
-        return view('admin.users.pending', compact('users'));
-    }
+     public function pending()
+     {
+      // On récupère les utilisateurs non approuvés AVEC la pagination (très important pour ta vue)
+      // On ajoute orWhereNull au cas où la valeur serait "null" dans la base de données au lieu de "false"
+      $users = \App\Models\User::where('is_approved', false)
+                                ->orWhereNull('is_approved')
+                                ->latest()
+                                ->paginate(10);
 
+      return view('admin.users.pending', compact('users'));
+    }
     // ─────────────────────────────────────────────────────────
     // APPROVE — Valider un compte
     // ─────────────────────────────────────────────────────────
     public function approve(User $user): RedirectResponse
-    {
-        $user->is_approved = true;
-        $user->approved_at = now();
-        $user->approved_by = Auth::id();
-        $user->save();
-        
-        // SÉCURITÉ & CAHIER DES CHARGES : Envoi d'un e-mail de validation
-        try {
-            Mail::raw("Bonjour {$user->name},\n\nExcellente nouvelle : votre compte a été validé par notre administrateur ! Vous pouvez dès à présent vous connecter sur la plateforme Chez Léon pour accéder à vos objets connectés.\n\nÀ très vite !", function ($message) use ($user) {
-                $message->to($user->email)
-                        ->subject('✅ Votre compte Chez Léon est validé !');
-            });
-        } catch (\Exception $e) {
-            // On attrape l'erreur si le serveur mail n'est pas configuré
-            // pour ne pas bloquer l'administrateur
-        }
-        
-        return back()->with('success', "Le compte de {$user->name} a été approuvé. Un e-mail lui a été envoyé.");
+ {
+    // On valide le compte
+    $user->is_approved = true;
+    $user->approved_at = now();
+    $user->approved_by = Auth::id();
+    
+    // AJOUT TECHNIQUE : Attribution automatique du rôle 'simple' [cite: 45, 132]
+    // Cela évite que l'utilisateur soit bloqué en tant que 'visiteur' sans accès.
+    if (empty($user->role) || $user->role === 'visiteur') {
+        $user->role = 'simple';
     }
+    
+    $user->save();
+    
+    // SÉCURITÉ & CAHIER DES CHARGES : Envoi d'un e-mail de validation [cite: 203]
+    try {
+        Mail::raw("Bonjour {$user->name},\n\nExcellente nouvelle : votre compte a été validé par notre administrateur ! Vous pouvez dès à présent vous connecter sur la plateforme Chez Léon pour accéder à vos objets connectés.\n\nÀ très vite !", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('✅ Votre compte Chez Léon est validé !');
+        });
+    } catch (\Exception $e) {
+        // On attrape l'erreur si le serveur mail n'est pas configuré (ex: mode log) [cite: 203]
+        // Cela permet de ne pas bloquer l'action de l'administrateur.
+    }
+    
+    return back()->with('success', "Le compte de {$user->name} a été approuvé avec le rôle 'Simple'. Un e-mail lui a été envoyé.");
+  }
 
     // ─────────────────────────────────────────────────────────
     // ADJUST XP — Ajouter ou retirer manuellement de l'XP
